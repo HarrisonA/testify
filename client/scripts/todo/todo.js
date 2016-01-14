@@ -22,10 +22,10 @@ var todo = {
         throw err; 
       }
 
-      console.log('calling setup ',res);
       
       if (!debug) {
-        todo.setup(res);
+        console.log('calling setup ',res);
+        todo.setup(res.todos);
       } else {
         todo.setup();
       }

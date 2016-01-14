@@ -6,11 +6,11 @@ todo.api = {
     request.open(options.method, options.endpoint, true);
     console.log('real send request');
     
-    request.onreadystatechange = function() {
+    request.onload = function() {
 
       console.log('loading response', request);
       
-      if (request.readyState >= 200 && request.readyState < 400){
+      if (request.status >= 200 && request.status < 400){
         // Success!
         var data = JSON.parse(request.responseText);
         callback(null, data);

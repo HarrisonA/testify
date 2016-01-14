@@ -8,6 +8,9 @@ describe('API integration', function(){
   
   before(function () {     // do the following BEFORE all tests are run
       server = sinon.fakeServer.create();   // create fake server
+      
+      sinon.stub(todo,"setup"); //stubbing setup so a new todo instance is not returned
+      
       // xhr = sinon.useFakeXMLHttpRequest();  
       // requests = [];
       // xhr.onCreate = function (req) { requests.push(req); };
@@ -17,12 +20,13 @@ describe('API integration', function(){
   after(function () {   // cleanup after all the tests are run
       // Like before we must clean up when tampering with globals.
       server.restore(); 
+      todo.setup.restore();
       // xhr.restore();
   });
 
   it('todo.setup receives an array of todos when todo.init is called', function () {
    
-    JSONresponse = [{ name: 'Client-side unit tests',  done: true},{  name: 'End-to-end workflow tests',  done: true},{  name: 'Visual tests',  done: true},{  name: 'Continous integration',  done: true},{  name: 'Code coverage reporting',  done: true},{  name: 'Server-side unit tests',  done: false},{  name: 'Client-server integration tests',  done: false}];
+    JSONresponse = [{ name: 'Client-side unit tests',  done: true}];
     
     //console.log(JSON.stringify({todos: JSONresponse}));
     
@@ -30,18 +34,14 @@ describe('API integration', function(){
     // 200, {"Content-Type":"application/json"}, JSON.stringify({todos: JSONresponse})
     // ]);
     server.respondWith([200, {"Content-Type":"application/json"}, JSON.stringify({todos: JSONresponse})]);
-    server.respondImmediately = true;
-    //server.respond();  
+    todo.init(false);
+    //server.respondImmediately = true;
+    server.respond();  
 
     // var sendStub = sinon.stub(todo.api,"sendRequest",function(){
     //   server.respond();
     // })
 
-    var setupStub = sinon.stub(todo,"setup", function(todos){
-      console.log('here is the todoList',todos);
-      todos.should.be.equal(JSONresponse);
-      done();
-    }); //stubbing setup so a new todo instance is not returned
 
     // var setupStub = sinon.stub(todo,"setup");
     
@@ -51,12 +51,11 @@ describe('API integration', function(){
     //   console.log(response);
     // })
 
-    todo.init(false);
     //expect(todoList).to.equal(JSONresponse);
 
     //setupStub.should.have.been.called;
     //server.respond();
-
+    sinon.assert.calledWith(todo.setup,JSONresponse);
   });
 });
 
