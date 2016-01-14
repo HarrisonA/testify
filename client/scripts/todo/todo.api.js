@@ -4,9 +4,13 @@ todo.api = {
     // create a new Ajax request
     var request = new XMLHttpRequest();
     request.open(options.method, options.endpoint, true);
+    console.log('real send request');
+    
+    request.onreadystatechange = function() {
 
-    request.onload = function() {
-      if (request.status >= 200 && request.status < 400){
+      console.log('loading response', request);
+      
+      if (request.readyState >= 200 && request.readyState < 400){
         // Success!
         var data = JSON.parse(request.responseText);
         callback(null, data);
